@@ -13,7 +13,6 @@ features_file="docs/FEATURES.md"
 decisions_file="docs/DECISIONS.md"
 progress_log_file="docs/LOG.md"
 
-tmp_result="$(mktemp agent_result.XXXXXX)"
 
 if ! [[ "$iterations" =~ ^[0-9]+$ ]] || [[ "$iterations" -lt 1 ]]; then
   echo "Usage: $0 [iterations]" >&2
@@ -21,6 +20,7 @@ if ! [[ "$iterations" =~ ^[0-9]+$ ]] || [[ "$iterations" -lt 1 ]]; then
 fi
 
 for (( i=1; i<=iterations; i++ )); do
+  tmp_result="$(mktemp agent_result.XXXXXX)"
   echo "== Iteration $i/$iterations ==" >&2
 
   prompt=$(cat <<EOF

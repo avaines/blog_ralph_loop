@@ -22,9 +22,12 @@
           Group
           <input id="group" name="group" type="text" />
         </label>
-        <button type="submit">Add TODO</button>
+        <button class="btn btn-primary" type="submit">Add TODO</button>
       </form>
-      <p id="error" class="error" hidden></p>
+      <p id="loading-state" class="ui-state ui-state--loading" aria-live="polite" hidden>
+        Loading TODOs...
+      </p>
+      <p id="error" class="ui-state ui-state--error" role="alert" hidden></p>
       <section class="filters" aria-label="Todo filters">
         <label>
           Filter by category
@@ -38,13 +41,13 @@
             <option value="">All groups</option>
           </select>
         </label>
-        <button id="clear-filters" type="button">Clear filters</button>
+        <button id="clear-filters" class="btn btn-secondary" type="button">Clear filters</button>
       </section>
       <p id="filter-context" class="filter-context" aria-live="polite">
         Showing all TODOs
       </p>
       <ul id="todo-list" aria-live="polite"></ul>
-      <p id="empty-state">No TODOs yet.</p>
+      <p id="empty-state" class="ui-state ui-state--empty">No TODOs yet.</p>
     </main>
     <script src="/static/app.js" defer></script>
   </body>

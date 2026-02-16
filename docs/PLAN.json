@@ -236,5 +236,141 @@
     ],
     "passes": true,
     "notes": "Added tests/p014-persistence-smoke.test.js implementing a restart smoke flow (POST create -> simulated module restart -> GET list) against isolated DB tmp/p014-persistence.sqlite, with beforeEach cleanup (table + sqlite_sequence reset) for repeatability. Validated targeted smoke run and full suite via node --test tests/p014-persistence-smoke.test.js and npm test. Verified non-persistent mutation fails the persistence assertion with a two-DB restart script on 2026-02-16."
+  },
+  {
+    "id": "P015",
+    "category": "infrastructure",
+    "description": "Define global CSS tokens for color, typography, spacing, radius, and shadows.",
+    "steps": [
+      "Add root-level CSS custom properties for visual tokens.",
+      "Apply tokens to base body, heading, spacing, and surface styles.",
+      "Replace repeated hard-coded values with token references."
+    ],
+    "validation": [
+      "UI renders with no missing-style regressions after token setup.",
+      "Primary text, background, spacing, and button styles use tokens.",
+      "Changing one token updates multiple related UI elements."
+    ],
+    "passes": true,
+    "notes": "Implemented global CSS token system in src/public/styles.css with :root custom properties for color, typography, spacing, radius, and shadow. Replaced repeated hard-coded styling values in base body, heading, forms/controls, filters, cards, and metadata with token references. Validated by running npm test (9/9 passing) and token-usage checks confirming core text/background/spacing/button styles use var(...) tokens and shared tokens drive multiple elements on 2026-02-16."
+  },
+  {
+    "id": "P016",
+    "category": "functional",
+    "description": "Refactor the app shell to a responsive layout that supports mobile and desktop.",
+    "steps": [
+      "Set a centered max-width container for desktop.",
+      "Ensure fluid widths and safe side padding on small screens.",
+      "Remove horizontal overflow in primary views."
+    ],
+    "validation": [
+      "At 360px width, no horizontal scrollbar appears.",
+      "At 1280px+ width, content remains centered and readable.",
+      "Form and list remain fully usable on both viewport sizes."
+    ],
+    "passes": true,
+    "notes": "Refactored responsive app shell layout in src/public/styles.css with fluid container width and safe side gutters, desktop-centered max width, and overflow guards for narrow viewports. Added a 768px+ form grid layout to improve desktop usability while keeping mobile stacked flow. Validated with npm test and targeted CSS assertions confirming no-horizontal-overflow protections and responsive layout rules on 2026-02-16."
+  },
+  {
+    "id": "P017",
+    "category": "functional",
+    "description": "Style TODO list rows as modern cards with clear active/completed distinction.",
+    "steps": [
+      "Apply card surfaces with consistent spacing and radius.",
+      "Add visual completed-state treatment distinct from active items.",
+      "Preserve readability for task text and metadata."
+    ],
+    "validation": [
+      "Completed and active items are visually distinct at a glance.",
+      "Card spacing and alignment are consistent across items.",
+      "List remains legible on mobile and desktop."
+    ],
+    "passes": true,
+    "notes": "Styled TODO list rows as modern cards in src/public/styles.css with stronger surface treatment, consistent spacing/radius, and clear active vs completed accents/backgrounds. Updated src/public/app.js to render completion state as styled state pills for at-a-glance distinction. Validated with npm test (9/9 passing) and targeted P017 CSS/markup assertions on 2026-02-16."
+  },
+  {
+    "id": "P018",
+    "category": "functional",
+    "description": "Upgrade form and button components to a consistent modern style system.",
+    "steps": [
+      "Unify input, select, and button styles for spacing and typography.",
+      "Define clear primary and secondary action styles.",
+      "Adjust form layout for stacked mobile and denser desktop presentation."
+    ],
+    "validation": [
+      "Form controls share a consistent visual language.",
+      "Primary actions are visually prioritized over secondary actions.",
+      "Form layout adapts correctly between mobile and desktop."
+    ],
+    "passes": true,
+    "notes": "Implemented consistent modern form/button style system in src/public/styles.css and applied semantic button variants in src/public/index.html + src/public/app.js. Unified input/select/button control sizing/typography, added primary (`.btn-primary`) and secondary (`.btn-secondary`) action styles, and refined responsive form/filter layout behavior for stacked mobile and denser desktop grids. Validated with npm test and targeted style assertions for control consistency, action hierarchy, and responsive layout rules on 2026-02-16."
+  },
+  {
+    "id": "P019",
+    "category": "functional",
+    "description": "Improve mobile touch ergonomics for all primary interactions.",
+    "steps": [
+      "Increase tap target sizes for create, toggle, delete, and filter controls.",
+      "Add spacing to prevent accidental adjacent taps.",
+      "Ensure destructive controls are clearly separated and identifiable."
+    ],
+    "validation": [
+      "Controls are comfortably tappable on a 360px viewport.",
+      "No cramped controls in the todo list and action areas.",
+      "Delete action is clearly separated from toggle action."
+    ],
+    "passes": true,
+    "notes": "Improved mobile touch ergonomics in src/public/styles.css by increasing base control height to 48px, setting todo action buttons to >=46px with full-width stacked layout on mobile, increasing action/filter spacing to reduce mis-taps, and separating destructive delete control with dedicated spacing. Validated with npm test and targeted CSS assertions on 2026-02-16."
+  },
+  {
+    "id": "P020",
+    "category": "functional",
+    "description": "Implement explicit hover, focus, active, and disabled control states.",
+    "steps": [
+      "Add hover and active states for clickable controls.",
+      "Add visible keyboard focus indicators for all interactive elements.",
+      "Define disabled-state visuals and behavior."
+    ],
+    "validation": [
+      "Tab navigation shows visible focus indicators on all controls.",
+      "Hover state is visually distinct from default state.",
+      "Disabled controls are clearly non-interactive."
+    ],
+    "passes": true,
+    "notes": "Implemented explicit interactive states in src/public/styles.css: hover and active treatments for buttons, visible focus-visible rings for buttons/inputs/selects, and disabled-state visuals with non-interactive cursor/appearance. Added disabled behavior in src/public/app.js by disabling form controls during create requests and per-item action buttons during toggle/delete requests. Validated with npm test and targeted assertions for CSS/JS state hooks on 2026-02-16."
+  },
+  {
+    "id": "P021",
+    "category": "functional",
+    "description": "Standardize styling for empty, loading, and error UI states.",
+    "steps": [
+      "Create consistent state container styles.",
+      "Apply style treatment to empty list, loading, and error messages.",
+      "Ensure state messaging fits responsive layouts."
+    ],
+    "validation": [
+      "Empty state is intentionally styled and readable.",
+      "Error state is visually distinct from neutral content.",
+      "State components do not break layout on mobile or desktop."
+    ],
+    "passes": true,
+    "notes": "Standardized UI state presentation for empty/loading/error in src/public/styles.css via shared .ui-state container variants, added explicit loading-state element in src/public/index.html, and wired loading visibility/messaging in src/public/app.js (including filter-aware empty messaging). Validated with npm test and targeted assertions for state markup, styles, and loading hooks on 2026-02-16."
+  },
+  {
+    "id": "P022",
+    "category": "quality",
+    "description": "Add a repeatable manual QA checklist for responsive and cross-browser styling.",
+    "steps": [
+      "Document viewport checks for 360px, 768px, and 1280px+.",
+      "Document browser checks for Chrome, Safari, and Firefox plus iOS Safari and Android Chrome.",
+      "Record explicit pass/fail criteria for layout, readability, and interaction states."
+    ],
+    "validation": [
+      "Checklist exists in docs and is executable step-by-step.",
+      "Checklist covers form, list, filters, and action controls.",
+      "Checklist includes pass/fail outcomes per browser and viewport."
+    ],
+    "passes": true,
+    "notes": "Added repeatable manual QA checklist in docs/QA_CHECKLIST.md covering required viewport checks (360x800, 768x1024, 1280x800), required browsers (Chrome/Safari/Firefox/iOS Safari/Android Chrome), and explicit pass/fail criteria for layout, readability, and interaction states. Included step-by-step execution flow and pass/fail outcome tables per browser and viewport. Validated checklist coverage with targeted content assertions on 2026-02-16."
   }
 ]

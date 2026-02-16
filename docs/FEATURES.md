@@ -52,6 +52,32 @@
   - README contains clear local run steps and test command(s).
   - MVP is not considered complete unless tests pass locally.
 
+## Epic: Modern Responsive Styling
+
+- [x] Feature: Responsive layout for mobile and desktop
+  - Acceptance criteria:
+  - App is fully usable at 360px width (mobile) and 1280px+ width (desktop).
+  - Main layout reflows without horizontal scrolling on supported viewport sizes.
+  - Touch targets for primary actions are comfortably tappable on mobile.
+
+- [x] Feature: Modern visual system (type, spacing, color, components)
+  - Acceptance criteria:
+  - UI uses a consistent design token set for spacing, typography, and colors.
+  - Core components (form, buttons, cards/list items, filters) share a coherent style language.
+  - Completed TODOs, active TODOs, and interactive states are clearly distinguishable.
+
+- [x] Feature: Interaction polish and feedback states
+  - Acceptance criteria:
+  - Hover, focus, active, and disabled states are visually distinct for interactive controls.
+  - Keyboard focus indicators are visible and meet accessibility contrast expectations.
+  - Empty, loading, and error states have intentional styling and readable messaging.
+
+- [ ] Feature: Cross-browser and device fit check
+  - Acceptance criteria:
+  - Styling is verified on current Chrome, Safari, and Firefox.
+  - No major visual breakage on common mobile browsers (iOS Safari, Android Chrome).
+  - Layout and typography remain legible and stable across tested environments.
+
 ## Notes
 - Keep each backlog item small and testable.
 - Move completed items to **Shipped** with checkboxes ticked.

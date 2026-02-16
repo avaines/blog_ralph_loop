@@ -566,3 +566,200 @@ NODE`
   - Mutation-style negative check failed with `AssertionError` when restart used a different DB file, confirming persistence assertion detects non-persistent storage behavior.
 - Next failing docs/PLAN.json item:
   - None.
+
+## 2026-02-16
+- What changed:
+  - Implemented `P015` in `src/public/styles.css` by adding root-level design tokens for colors, typography, spacing, radius, and shadow.
+  - Replaced repeated hard-coded values with token references across base body styles, heading typography, form controls, filter text, todo cards, and action buttons.
+  - Updated `docs/PLAN.json` to mark `P015` as passing with implementation and validation notes.
+- Commands run:
+  - `npm test`
+  - `rg -n "var\\(--" src/public/styles.css`
+  - `rg -n "^\\s*(background|color|padding|gap|border-radius|box-shadow|font-size|font-weight):" src/public/styles.css`
+  - `printf "surface=%s\\nspace3=%s\\ntext-muted=%s\\n" "$(rg -o "var\\(--color-surface\\)" src/public/styles.css | wc -l | tr -d ' ')" "$(rg -o "var\\(--space-3\\)" src/public/styles.css | wc -l | tr -d ' ')" "$(rg -o "var\\(--color-text-muted\\)" src/public/styles.css | wc -l | tr -d ' ')"`
+- Results:
+  - Full automated test suite passed (`9/9`).
+  - CSS token check confirmed base text/background plus spacing and button styling use `var(...)` token references.
+  - Shared token usage is confirmed (`var(--color-surface)` appears 3 times, `var(--space-3)` appears 4 times, `var(--color-text-muted)` appears 2 times), showing one-token updates affect multiple UI elements.
+- Next failing docs/PLAN.json item:
+  - `P016` (Refactor the app shell to a responsive layout that supports mobile and desktop.)
+
+## 2026-02-16
+- What changed:
+  - Implemented `P016` by refactoring the app shell layout in `src/public/styles.css` for responsive mobile/desktop behavior.
+  - Added fluid container sizing with safe side gutters (`--layout-gutter`) and a desktop max-width (`--layout-max-width`) to keep content centered and readable at large widths.
+  - Added overflow guards (`overflow-x: hidden`, `min-width: 0`, wrapped action rows, and long-text wrapping) to prevent horizontal scroll in primary views on narrow screens.
+  - Added a `768px+` layout rule to present the create form in a denser desktop grid while preserving stacked mobile usability.
+  - Updated `docs/PLAN.json` to mark `P016` as passing.
+- Commands run:
+  - `npm test`
+  - `node - <<'NODE'
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+
+const css = fs.readFileSync('src/public/styles.css', 'utf8');
+
+assert.match(css, /\.app\s*\{[\s\S]*width:\s*min\(calc\(100% - \(var\(--layout-gutter\) \* 2\)\),\s*var\(--layout-max-width\)\);/);
+assert.match(css, /body\s*\{[\s\S]*overflow-x:\s*hidden;/);
+assert.match(css, /@media \(min-width:\s*768px\)\s*\{[\s\S]*#todo-form\s*\{[\s\S]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\) auto;/);
+assert.match(css, /\.todo-actions\s*\{[\s\S]*flex-wrap:\s*wrap;/);
+assert.match(css, /\.todo-item \.title\s*\{[\s\S]*overflow-wrap:\s*anywhere;/);
+
+console.log('P016 CSS layout validation passed');
+NODE`
+- Results:
+  - Full automated suite passed (`9/9`).
+  - Targeted CSS validation passed (`P016 CSS layout validation passed`), confirming responsive shell width constraints, desktop form reflow rules, and no-horizontal-overflow protections are present.
+- Next failing docs/PLAN.json item:
+  - `P017` (Style TODO list rows as modern cards with clear active/completed distinction.)
+
+## 2026-02-16
+- What changed:
+  - Implemented `P017` by restyling TODO list rows in `src/public/styles.css` as modern cards with stronger surfaces, consistent spacing/radius, and improved per-item alignment.
+  - Added explicit active/completed visual distinction on cards using left accent bars and completed-state background treatment.
+  - Improved task readability with tuned title/meta line-height and added state-pill styling.
+  - Updated `src/public/app.js` to render completion state metadata with `state-pill active|completed` classes.
+  - Updated `docs/PLAN.json` to mark `P017` as passing with implementation and validation notes.
+- Commands run:
+  - `npm test`
+  - `node - <<'NODE' ... P017 style validation assertions ... NODE`
+- Results:
+  - Full automated suite passed (`9/9`).
+  - Targeted style checks passed (`P017 style validation passed`), confirming card spacing/radius treatment, active vs completed distinction, and readability-focused typography rules.
+- Next failing docs/PLAN.json item:
+  - `P018` (Upgrade form and button components to a consistent modern style system.)
+
+## 2026-02-16
+- What changed:
+  - Implemented `P018` by upgrading form and button styling in `src/public/styles.css` to a consistent modern control system.
+  - Added shared control sizing/typography tokens (`--font-size-control`, `--control-height`, control padding, and `--radius-md`) and applied them across `input`, `select`, and `button`.
+  - Added explicit primary and secondary button variants (`.btn-primary`, `.btn-secondary`) and applied them to create/filter actions via `src/public/index.html` and `src/public/app.js`.
+  - Refined responsive form/filter layout behavior for mobile (full-width stacked controls) and desktop (`768px+` denser grid with auto-width action buttons).
+  - Updated `docs/PLAN.json` to mark `P018` as passing with implementation/validation notes.
+- Commands run:
+  - `npm test`
+  - `node - <<'NODE'
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+
+const html = fs.readFileSync('src/public/index.html', 'utf8');
+const css = fs.readFileSync('src/public/styles.css', 'utf8');
+const js = fs.readFileSync('src/public/app.js', 'utf8');
+
+assert.match(html, /class="btn btn-primary"\s+type="submit"/);
+assert.match(html, /id="clear-filters" class="btn btn-secondary"/);
+assert.match(js, /toggleButton\.className = "toggle-btn btn btn-secondary"/);
+assert.match(js, /deleteButton\.className = "delete-btn btn"/);
+
+assert.match(css, /input,\s*\nselect,\s*\nbutton\s*\{[\s\S]*font-size:\s*var\(--font-size-control\);[\s\S]*min-height:\s*var\(--control-height\);/);
+assert.match(css, /button\s*\{[\s\S]*border-color:\s*var\(--color-secondary-border\);[\s\S]*background:\s*var\(--color-secondary-bg\);/);
+assert.match(css, /\.btn-primary\s*\{[\s\S]*background:\s*var\(--color-primary\);[\s\S]*color:\s*var\(--color-primary-contrast\);/);
+assert.match(css, /\.btn-secondary\s*\{[\s\S]*background:\s*var\(--color-secondary-bg\);/);
+
+assert.match(css, /@media \(min-width:\s*768px\)\s*\{[\s\S]*#todo-form\s*\{[\s\S]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\) auto;/);
+assert.match(css, /@media \(min-width:\s*768px\)\s*\{[\s\S]*\.filters\s*\{[\s\S]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\) auto;/);
+
+console.log('P018 validation passed');
+NODE`
+- Results:
+  - Full automated test suite passed (`9/9`).
+  - Targeted `P018` validation assertions passed (`P018 validation passed`) for unified control styling, primary-vs-secondary action treatment, and responsive form layout rules.
+- Next failing docs/PLAN.json item:
+  - `P019` (Improve mobile touch ergonomics for all primary interactions.)
+
+## 2026-02-16
+- What changed:
+  - Selected and implemented `P019` (highest-priority pending functional styling task) by updating `src/public/styles.css` for mobile touch ergonomics.
+  - Increased baseline control tap target size from `42px` to `48px`.
+  - Updated todo action controls to a single-column mobile layout with larger action buttons (`min-height: 46px`) and increased spacing to reduce accidental adjacent taps.
+  - Added explicit spacing separation for the destructive delete control (`.delete-btn`) and desktop-side separation via left margin.
+  - Increased filter section spacing to reduce cramped controls on smaller viewports.
+  - Marked `P019` as passing in `docs/PLAN.json` and checked `Feature: Responsive layout for mobile and desktop` in `docs/FEATURES.md`.
+- Commands run:
+  - `npm test`
+  - `node - <<'NODE'
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const css = fs.readFileSync('src/public/styles.css', 'utf8');
+assert.match(css, /--control-height:\\s*48px;/);
+assert.match(css, /\\.todo-actions\\s*\\{[\\s\\S]*grid-template-columns:\\s*minmax\\(0, 1fr\\);[\\s\\S]*gap:\\s*var\\(--space-3\\);/);
+assert.match(css, /\\.todo-actions button\\s*\\{[\\s\\S]*min-height:\\s*46px;/);
+assert.match(css, /\\.delete-btn\\s*\\{[\\s\\S]*margin-top:\\s*var\\(--space-2\\);/);
+assert.match(css, /@media \\(min-width:\\s*768px\\)[\\s\\S]*\\.delete-btn\\s*\\{[\\s\\S]*margin-left:\\s*var\\(--space-3\\);/);
+console.log('P019 CSS assertions passed');
+NODE`
+- Results:
+  - Automated backend regression suite passed (`9/9`).
+  - CSS assertions passed for enlarged tap targets, increased spacing, and destructive-action separation.
+- Next failing docs/PLAN.json item:
+  - `P020` (Implement explicit hover, focus, active, and disabled control states.)
+
+## 2026-02-16
+- What changed:
+  - Selected and implemented `P020` as the highest-priority remaining functional styling unit.
+  - Updated `src/public/styles.css` with explicit control interaction states: hover, active, keyboard `:focus-visible`, and disabled visual treatments for buttons/inputs/selects.
+  - Updated `src/public/app.js` to enforce disabled-state behavior during async interactions by disabling form controls while creating TODOs and disabling per-item action controls while toggle/delete requests are in flight.
+  - Updated `docs/PLAN.json` to mark `P020` as passing with implementation/validation notes.
+  - Updated `docs/FEATURES.md` to check off `Feature: Modern visual system (type, spacing, color, components)`.
+- Commands run:
+  - `npm test`
+  - `node - <<'NODE' ... P020 CSS/JS assertion checks ... NODE`
+- Results:
+  - Automated test suite passed (`9/9`).
+  - Targeted `P020` assertions passed (`P020 validation passed`), confirming explicit hover/focus/active/disabled styles and disabled behavior hooks in app logic.
+- Next failing docs/PLAN.json item:
+  - `P021` (Standardize styling for empty, loading, and error UI states.)
+
+## 2026-02-16
+- What changed:
+  - Selected and implemented `P021` as the highest-priority remaining functional unit in `docs/PLAN.json`.
+  - Added a dedicated loading-state element to `src/public/index.html` and standardized all feedback states (`empty`, `loading`, `error`) to shared UI state classes.
+  - Updated `src/public/app.js` with `setLoading(isLoading)` and integrated loading visibility into `loadTodos()`, plus filter-aware empty messaging (`No TODOs yet.` vs `No TODOs match the current filters.`).
+  - Added consistent state container styling variants in `src/public/styles.css` via `.ui-state`, `.ui-state--empty`, `.ui-state--loading`, and `.ui-state--error`.
+  - Updated `docs/PLAN.json` to mark `P021` as passing and updated `docs/FEATURES.md` to check `Feature: Interaction polish and feedback states`.
+- Commands run:
+  - `npm test && node - <<'NODE'
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+
+const html = fs.readFileSync('src/public/index.html', 'utf8');
+const css = fs.readFileSync('src/public/styles.css', 'utf8');
+const js = fs.readFileSync('src/public/app.js', 'utf8');
+
+assert.match(html, /id="loading-state" class="ui-state ui-state--loading"/);
+assert.match(html, /id="error" class="ui-state ui-state--error"/);
+assert.match(html, /id="empty-state" class="ui-state ui-state--empty"/);
+
+assert.match(css, /\.ui-state\s*\{[\s\S]*padding:\s*var\(--space-3\) var\(--space-4\);[\s\S]*overflow-wrap:\s*anywhere;/);
+assert.match(css, /\.ui-state--empty\s*\{[\s\S]*background:\s*var\(--color-secondary-bg\);/);
+assert.match(css, /\.ui-state--loading\s*\{[\s\S]*background:\s*#f2f7fd;/);
+assert.match(css, /\.ui-state--error\s*\{[\s\S]*color:\s*var\(--color-danger\);/);
+
+assert.match(js, /function setLoading\(isLoading\)/);
+assert.match(js, /setLoading\(true\);/);
+assert.match(js, /setLoading\(false\);/);
+assert.match(js, /No TODOs match the current filters\./);
+assert.match(js, /"No TODOs yet\."/);
+
+console.log('P021 validation passed');
+NODE`
+- Results:
+  - Automated test suite passed (`9/9`).
+  - Targeted `P021` assertions passed (`P021 validation passed`) for standardized empty/loading/error state markup, styling, and loading behavior hooks.
+- Next failing docs/PLAN.json item:
+  - `P022` (Add a repeatable manual QA checklist for responsive and cross-browser styling.)
+
+## 2026-02-16
+- What changed:
+  - Selected and implemented `P022` as the highest-priority remaining failing unit in `docs/PLAN.json`.
+  - Added `docs/QA_CHECKLIST.md` with a repeatable manual QA checklist for responsive and cross-browser styling.
+  - Documented required viewport checks (`360x800`, `768x1024`, `1280x800`) and browser coverage (Chrome, Safari, Firefox, iOS Safari, Android Chrome).
+  - Added explicit pass/fail criteria and per-browser/per-viewport results tables covering layout, readability, and interaction states.
+  - Updated `docs/PLAN.json` to mark `P022` as passing with implementation and validation notes.
+- Commands run:
+  - `node - <<'NODE' ... checklist coverage assertions ... NODE`
+- Results:
+  - Checklist coverage validation passed (`P022 checklist validation passed`).
+  - `docs/QA_CHECKLIST.md` is executable step-by-step and includes required component coverage (form, list, filters, actions) and pass/fail outcome capture per browser/viewport.
+- Next failing docs/PLAN.json item:
+  - None.

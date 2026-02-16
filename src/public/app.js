@@ -7,10 +7,28 @@ const groupFilter = document.getElementById("filter-group");
 const clearFiltersButton = document.getElementById("clear-filters");
 const filterContext = document.getElementById("filter-context");
 const todoList = document.getElementById("todo-list");
+const loadingState = document.getElementById("loading-state");
 const emptyState = document.getElementById("empty-state");
 const errorElement = document.getElementById("error");
+const submitButton = form.querySelector('button[type="submit"]');
 let currentTodos = [];
 const activeFilters = { category: "", group: "" };
+
+function setFormDisabled(disabled) {
+  titleInput.disabled = disabled;
+  categoryInput.disabled = disabled;
+  groupInput.disabled = disabled;
+  submitButton.disabled = disabled;
+}
+
+function setTodoActionDisabled(todoId, disabled) {
+  const controls = todoList.querySelectorAll(
+    `button[data-todo-id="${todoId}"]`,
+  );
+  for (const control of controls) {
+    control.disabled = disabled;
+  }
+}
 
 function getFilterLabel(value) {
   return value || "All";
@@ -83,21 +101,31 @@ function setError(message) {
   errorElement.textContent = message;
 }
 
+function setLoading(isLoading) {
+  loadingState.hidden = !isLoading;
+  if (isLoading) {
+    emptyState.hidden = true;
+  }
+}
+
 function renderTodos(todos) {
   currentTodos = Array.isArray(todos) ? todos : [];
   updateFiltersForTodos(currentTodos);
   const filteredTodos = applyActiveFilters(currentTodos);
   updateFilterContext();
+  setLoading(false);
   todoList.innerHTML = "";
 
   if (filteredTodos.length === 0) {
     emptyState.hidden = false;
-    emptyState.textContent = "No TODOs match the current filters.";
+    const hasActiveFilters = Boolean(activeFilters.category || activeFilters.group);
+    emptyState.textContent = hasActiveFilters
+      ? "No TODOs match the current filters."
+      : "No TODOs yet.";
     return;
   }
 
   emptyState.hidden = true;
-  emptyState.textContent = "No TODOs yet.";
 
   for (const todo of filteredTodos) {
     const item = document.createElement("li");
@@ -117,7 +145,7 @@ function renderTodos(todos) {
     group.textContent = `Group: ${todo.group_name || "-"}`;
 
     const completionState = document.createElement("span");
-    completionState.className = "meta";
+    completionState.className = `meta state-pill ${todo.completed ? "completed" : "active"}`;
     completionState.textContent = `State: ${state}`;
 
     const actions = document.createElement("div");
@@ -125,7 +153,7 @@ function renderTodos(todos) {
 
     const toggleButton = document.createElement("button");
     toggleButton.type = "button";
-    toggleButton.className = "toggle-btn";
+    toggleButton.className = "toggle-btn btn btn-secondary";
     toggleButton.dataset.action = "toggle";
     toggleButton.dataset.todoId = String(todo.id);
     toggleButton.textContent = todo.completed
@@ -134,7 +162,7 @@ function renderTodos(todos) {
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
-    deleteButton.className = "delete-btn";
+    deleteButton.className = "delete-btn btn";
     deleteButton.dataset.action = "delete";
     deleteButton.dataset.todoId = String(todo.id);
     deleteButton.textContent = "Delete";
@@ -146,12 +174,17 @@ function renderTodos(todos) {
 }
 
 async function loadTodos() {
-  const response = await fetch("/api/todos");
-  if (!response.ok) {
-    throw new Error("Could not load TODOs");
+  setLoading(true);
+  try {
+    const response = await fetch("/api/todos");
+    if (!response.ok) {
+      throw new Error("Could not load TODOs");
+    }
+    const todos = await response.json();
+    renderTodos(todos);
+  } finally {
+    setLoading(false);
   }
-  const todos = await response.json();
-  renderTodos(todos);
 }
 
 async function createTodo(payload) {
@@ -200,6 +233,7 @@ async function deleteTodo(todoId) {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   setError("");
+  setFormDisabled(true);
 
   try {
     await createTodo({
@@ -212,6 +246,8 @@ form.addEventListener("submit", async (event) => {
     await loadTodos();
   } catch (error) {
     setError(error.message);
+  } finally {
+    setFormDisabled(false);
   }
 });
 
@@ -247,6 +283,7 @@ todoList.addEventListener("click", async (event) => {
 
   const previousTodos = currentTodos.slice();
   setError("");
+  setTodoActionDisabled(todoId, true);
 
   try {
     if (action === "toggle") {
@@ -275,6 +312,8 @@ todoList.addEventListener("click", async (event) => {
       return;
     }
     setError(error.message);
+  } finally {
+    setTodoActionDisabled(todoId, false);
   }
 });
 

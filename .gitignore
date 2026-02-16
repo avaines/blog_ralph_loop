@@ -1,2 +1,3 @@
 agent_result.**
-data/**.sqlite
+data/**
+tmp/**
