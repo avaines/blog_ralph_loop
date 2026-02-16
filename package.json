@@ -1,0 +1,11 @@
+{
+  "name": "blog_ralph_loop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TODO MVP app",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  }
+}

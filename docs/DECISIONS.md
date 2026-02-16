@@ -19,3 +19,14 @@
 - Consequences:
   - Positive: Low operational overhead and straightforward local development.
   - Tradeoff: Not designed for multi-user concurrency or remote access at this stage.
+
+## ADR-002: SQLite Driver for MVP Bootstrap
+- Date: 2026-02-16
+- Status: Accepted
+- Context:
+  - Need to implement and validate database bootstrap (`P001`) in a sandbox without relying on package installation.
+- Decision:
+  - Use Node's built-in `node:sqlite` (`DatabaseSync`) for SQLite initialization.
+- Consequences:
+  - Positive: No external install required for DB bootstrap validation.
+  - Tradeoff: Feature is experimental in Node 22 and emits a runtime warning.

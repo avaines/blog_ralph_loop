@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TODO MVP</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>TODOs</h1>
+      <form id="todo-form">
+        <label>
+          Title
+          <input id="title" name="title" type="text" required />
+        </label>
+        <label>
+          Category
+          <input id="category" name="category" type="text" />
+        </label>
+        <label>
+          Group
+          <input id="group" name="group" type="text" />
+        </label>
+        <button type="submit">Add TODO</button>
+      </form>
+      <p id="error" class="error" hidden></p>
+      <section class="filters" aria-label="Todo filters">
+        <label>
+          Filter by category
+          <select id="filter-category" name="filter-category">
+            <option value="">All categories</option>
+          </select>
+        </label>
+        <label>
+          Filter by group
+          <select id="filter-group" name="filter-group">
+            <option value="">All groups</option>
+          </select>
+        </label>
+        <button id="clear-filters" type="button">Clear filters</button>
+      </section>
+      <p id="filter-context" class="filter-context" aria-live="polite">
+        Showing all TODOs
+      </p>
+      <ul id="todo-list" aria-live="polite"></ul>
+      <p id="empty-state">No TODOs yet.</p>
+    </main>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

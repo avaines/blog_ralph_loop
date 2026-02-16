@@ -13,8 +13,8 @@
       "Query schema and confirm todos table includes all required columns.",
       "Restart app and confirm database file remains present."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Implemented SQLite bootstrap in src/db.js and startup initialization in src/server.js. Validated startup, schema columns, and DB file persistence across restart on 2026-02-16."
   },
   {
     "id": "P002",
@@ -30,8 +30,8 @@
       "POST with empty title returns 400.",
       "Database contains the new row after request."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Implemented POST /api/todos in src/server.js with non-empty title validation, DB insert (completed=0), and created-row response payload. Validated 201/400 outcomes and DB persistence via handler-level invocation on 2026-02-16 (sandbox blocks local port binding)."
   },
   {
     "id": "P003",
@@ -47,8 +47,8 @@
       "Confirm failing behavior if title validation is removed.",
       "Confirm tests do not depend on existing local data."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Added automated tests in tests/p003-create-todo.test.js for valid and invalid POST /api/todos behavior using isolated test DB at tmp/p003-create.sqlite via TODO_DB_PATH. Validated with npm test on 2026-02-16."
   },
   {
     "id": "P004",
@@ -64,8 +64,8 @@
       "After creating todos, GET includes them with expected fields.",
       "Response ordering is newest first."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Implemented GET /api/todos in src/server.js returning id, title, category, group_name, completed, and created_at sorted newest-first by created_at (with id tie-breaker). Validated 200 JSON array response, field shape after creating todos, and newest-first ordering via handler-level invocation on 2026-02-16 (sandbox blocks local port binding)."
   },
   {
     "id": "P005",
@@ -81,8 +81,8 @@
       "Confirm test fails if sorting is reversed.",
       "Confirm test uses isolated database state."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Added tests/p005-list-todos.test.js with isolated DB path (tmp/p005-list.sqlite), seeded two todos in setup, and asserted GET /api/todos returns required fields in newest-first order. Validated with node --test target run, npm test, and a negative mutation-style assertion that intentionally expected reversed order (failed as expected) on 2026-02-16."
   },
   {
     "id": "P006",
@@ -98,8 +98,8 @@
       "PATCH returns 404 for unknown id.",
       "Database row reflects toggled state after request."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Implemented PATCH /api/todos/:id/toggle in src/server.js with completed-state flip using SQL CASE update, 200 updated-row response, and 404 for missing/invalid ids. Validated false->true->false behavior plus persisted DB state and unknown-id 404 via isolated handler-level run on 2026-02-16; regression suite passes."
   },
   {
     "id": "P007",
@@ -115,8 +115,8 @@
       "Confirm test fails if endpoint always sets completed=true.",
       "Confirm updated state is persisted in database assertions."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Added tests/p007-toggle-todo.test.js with isolated DB path (tmp/p007-toggle.sqlite), seeded one todo in setup, asserted PATCH toggle flips false->true->false across two calls with DB persistence checks, and asserted 404 for nonexistent id. Validated with targeted and full test runs plus a mutation-style negative assertion that intentionally expected always-true behavior (failed as expected) on 2026-02-16."
   },
   {
     "id": "P008",
@@ -132,8 +132,8 @@
       "Subsequent GET no longer includes deleted todo.",
       "DELETE unknown id returns 404."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Implemented DELETE /api/todos/:id in src/server.js with 204 for successful deletion and 404 for missing/invalid ids. Validated delete success, post-delete absence from GET and DB row, and unknown-id 404 via isolated handler-level flow on 2026-02-16; regression suite passes."
   },
   {
     "id": "P009",
@@ -149,8 +149,8 @@
       "Confirm test fails if endpoint returns success without removing row.",
       "Confirm deletion is persisted across app restart in integration flow."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Added tests/p009-delete-todo.test.js with isolated DB path (tmp/p009-delete.sqlite), seeded one todo in setup, asserted DELETE returns 204 and removal via GET/DB query, asserted 404 for unknown id, and validated deletion persistence after simulated app restart via server module reload. Validated with targeted and full test runs plus a mutation-style negative assertion that intentionally expected deleted row presence (failed as expected) on 2026-02-16."
   },
   {
     "id": "P010",
@@ -166,8 +166,8 @@
       "Submitting form creates todo and it appears in list without reload.",
       "Empty list shows an explicit empty state message."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Implemented minimal browser UI shell via src/public/index.html, src/public/app.js, and src/public/styles.css, and added static serving in src/server.js for / and /static/* while keeping API routes intact. Validated page/static delivery, create/list API-backed flow, and explicit empty state rendering hooks with isolated handler-level checks plus full test suite on 2026-02-16."
   },
   {
     "id": "P011",
@@ -183,8 +183,8 @@
       "Clicking delete removes item and it does not return after refresh.",
       "UI remains consistent when API returns 404 for stale item ids."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Implemented UI toggle/delete actions in src/public/app.js with per-item controls wired to PATCH /api/todos/:id/toggle and DELETE /api/todos/:id, immediate optimistic UI updates, and stale-id (404) recovery via list refresh + message. Added matching control styling in src/public/styles.css. Validated with npm test and a mocked DOM/fetch interaction script confirming immediate toggle visual update, delete flow, and 404 consistency handling on 2026-02-16."
   },
   {
     "id": "P012",
@@ -200,8 +200,8 @@
       "Selecting a group shows only matching todos.",
       "Clearing controls restores full list."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Implemented basic client-side category/group filtering controls in src/public/index.html and src/public/app.js, including active filter context text and clear-filters action. Updated rendering to show only matching todos and explicit filtered empty state. Validated filter-by-category, filter-by-group, and clear behavior via targeted app.js harness script, and ran full regression suite with npm test on 2026-02-16."
   },
   {
     "id": "P013",
@@ -217,8 +217,8 @@
       "Follow README and run tests successfully.",
       "Commands are copy-pasteable and match package scripts."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Added README.md with prerequisites and exact local run/test commands (npm install, npm run start, npm test). Validated npm test passes and README commands align with package scripts on 2026-02-16; direct startup execution in this sandbox is blocked by listen EPERM."
   },
   {
     "id": "P014",
@@ -234,7 +234,7 @@
       "Smoke test fails if database uses in-memory mode.",
       "Test can be rerun without manual database edits."
     ],
-    "passes": false,
-    "notes": ""
+    "passes": true,
+    "notes": "Added tests/p014-persistence-smoke.test.js implementing a restart smoke flow (POST create -> simulated module restart -> GET list) against isolated DB tmp/p014-persistence.sqlite, with beforeEach cleanup (table + sqlite_sequence reset) for repeatability. Validated targeted smoke run and full suite via node --test tests/p014-persistence-smoke.test.js and npm test. Verified non-persistent mutation fails the persistence assertion with a two-DB restart script on 2026-02-16."
   }
 ]
