@@ -1,1 +1,240 @@
-[]
+[
+  {
+    "id": "P001",
+    "category": "infrastructure",
+    "description": "Create SQLite bootstrap and todos table with required MVP columns.",
+    "steps": [
+      "Add database initialization on server start.",
+      "Create todos table if it does not exist with: id, title, category, group_name, completed, created_at.",
+      "Store database file locally in project workspace."
+    ],
+    "validation": [
+      "Start the app and verify startup completes without SQL errors.",
+      "Query schema and confirm todos table includes all required columns.",
+      "Restart app and confirm database file remains present."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P002",
+    "category": "functional",
+    "description": "Implement POST endpoint to create a TODO with title, category, and group.",
+    "steps": [
+      "Add POST /api/todos route.",
+      "Validate title is non-empty.",
+      "Insert row with completed=false and created_at timestamp, then return created record."
+    ],
+    "validation": [
+      "POST valid payload returns 201 with id and persisted fields.",
+      "POST with empty title returns 400.",
+      "Database contains the new row after request."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P003",
+    "category": "quality",
+    "description": "Add automated test for TODO creation API.",
+    "steps": [
+      "Add one test that posts a valid todo and asserts 201 response shape.",
+      "Add one test that posts invalid title and asserts 400.",
+      "Ensure test uses isolated test database state."
+    ],
+    "validation": [
+      "Run test command and confirm create endpoint tests pass.",
+      "Confirm failing behavior if title validation is removed.",
+      "Confirm tests do not depend on existing local data."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P004",
+    "category": "functional",
+    "description": "Implement GET endpoint to list TODOs.",
+    "steps": [
+      "Add GET /api/todos route.",
+      "Return todos with id, title, category, group_name, completed, created_at.",
+      "Sort newest first by created_at."
+    ],
+    "validation": [
+      "GET returns 200 and JSON array.",
+      "After creating todos, GET includes them with expected fields.",
+      "Response ordering is newest first."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P005",
+    "category": "quality",
+    "description": "Add automated test for TODO listing API.",
+    "steps": [
+      "Seed two todos in test setup.",
+      "Call GET /api/todos and assert both items are returned.",
+      "Assert response includes required fields and expected sort order."
+    ],
+    "validation": [
+      "Run test command and confirm list endpoint tests pass.",
+      "Confirm test fails if sorting is reversed.",
+      "Confirm test uses isolated database state."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P006",
+    "category": "functional",
+    "description": "Implement endpoint to toggle TODO completion state.",
+    "steps": [
+      "Add PATCH /api/todos/:id/toggle route.",
+      "Flip completed value for the targeted todo.",
+      "Return updated todo and 404 for missing id."
+    ],
+    "validation": [
+      "PATCH toggles false->true and true->false on repeated calls.",
+      "PATCH returns 404 for unknown id.",
+      "Database row reflects toggled state after request."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P007",
+    "category": "quality",
+    "description": "Add automated test for completion toggle API.",
+    "steps": [
+      "Create one todo in setup.",
+      "Call toggle endpoint twice and assert state flips each time.",
+      "Assert 404 behavior for nonexistent id."
+    ],
+    "validation": [
+      "Run test command and confirm toggle tests pass.",
+      "Confirm test fails if endpoint always sets completed=true.",
+      "Confirm updated state is persisted in database assertions."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P008",
+    "category": "functional",
+    "description": "Implement endpoint to delete a TODO.",
+    "steps": [
+      "Add DELETE /api/todos/:id route.",
+      "Delete targeted row and return 204.",
+      "Return 404 when id does not exist."
+    ],
+    "validation": [
+      "DELETE existing id returns 204.",
+      "Subsequent GET no longer includes deleted todo.",
+      "DELETE unknown id returns 404."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P009",
+    "category": "quality",
+    "description": "Add automated test for delete API.",
+    "steps": [
+      "Seed one todo in setup.",
+      "Call DELETE and assert 204 then verify absence via GET or DB query.",
+      "Assert 404 for deleting unknown id."
+    ],
+    "validation": [
+      "Run test command and confirm delete tests pass.",
+      "Confirm test fails if endpoint returns success without removing row.",
+      "Confirm deletion is persisted across app restart in integration flow."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P010",
+    "category": "functional",
+    "description": "Serve a minimal browser UI shell for creating and listing TODOs.",
+    "steps": [
+      "Serve a single HTML page and static assets from the app.",
+      "Add form inputs for title, category, and group.",
+      "Render todo list from GET /api/todos on load."
+    ],
+    "validation": [
+      "Open app in browser and confirm page loads without JS errors.",
+      "Submitting form creates todo and it appears in list without reload.",
+      "Empty list shows an explicit empty state message."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P011",
+    "category": "functional",
+    "description": "Add UI actions to toggle complete and delete TODOs.",
+    "steps": [
+      "Add toggle control per todo item wired to PATCH endpoint.",
+      "Add delete control per todo item wired to DELETE endpoint.",
+      "Update UI state immediately after each action."
+    ],
+    "validation": [
+      "Clicking toggle changes visual state and persists after page refresh.",
+      "Clicking delete removes item and it does not return after refresh.",
+      "UI remains consistent when API returns 404 for stale item ids."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P012",
+    "category": "functional",
+    "description": "Add basic group/category view controls to manage TODOs by grouping.",
+    "steps": [
+      "Add simple filter or grouping controls for category and group.",
+      "Apply controls to displayed list client-side or server-side.",
+      "Show current active filter/group context in the UI."
+    ],
+    "validation": [
+      "Selecting a category shows only matching todos.",
+      "Selecting a group shows only matching todos.",
+      "Clearing controls restores full list."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P013",
+    "category": "quality",
+    "description": "Document local run and test commands in README for MVP quality gate.",
+    "steps": [
+      "Add setup prerequisites section.",
+      "Add exact commands to start app locally.",
+      "Add exact command to run automated tests."
+    ],
+    "validation": [
+      "Follow README from a clean clone and start app successfully.",
+      "Follow README and run tests successfully.",
+      "Commands are copy-pasteable and match package scripts."
+    ],
+    "passes": false,
+    "notes": ""
+  },
+  {
+    "id": "P014",
+    "category": "quality",
+    "description": "Add a single smoke test that verifies local persistence across restart.",
+    "steps": [
+      "Create a smoke test flow: create todo, stop app, restart app, list todos.",
+      "Assert created todo remains present after restart.",
+      "Document any test fixture cleanup needed for repeatability."
+    ],
+    "validation": [
+      "Smoke test passes on local machine.",
+      "Smoke test fails if database uses in-memory mode.",
+      "Test can be rerun without manual database edits."
+    ],
+    "passes": false,
+    "notes": ""
+  }
+]
